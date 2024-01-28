@@ -416,11 +416,13 @@ public:
 						list->addItem(clickableListItem3);
 					}
 					auto *clickableListItem4 = new tsl::elm::MiniToggleListItem("Ignore Acquire Texture", *skipAcquire_shared);
-					clickableListItem4->setClickListener([](u64 keys) { 
-						if ((keys & HidNpadButton_A) && PluginRunning) {
-							*skipAcquire_shared = !*skipAcquire_shared;
+					clickableListItem4->setClickListener([clickableListItem4](u64 keys) {
+						if ((keys & HidNpadButton_A) && PluginRunning && !*skipAcquire_shared) {
+							*skipAcquire_shared = true;
+							clickableListItem4->setState(true);
 							return true;
 						}
+						clickableListItem4->setState(true);
 						return false;
 					});
 					list->addItem(clickableListItem4);					
@@ -765,7 +767,7 @@ public:
 				if ((*API_shared > 0) && (*API_shared <= 2))
 					renderer->drawString(FPSMode_c, false, x, y+40, 20, renderer->a(0xFFFF));
 				renderer->drawString(FPSTarget_c, false, x, y+60, 20, renderer->a(0xFFFF));
-				renderer->drawString(PFPS_c, false, x+264, y+44, 50, renderer->a(0xFFFF));
+				renderer->drawString(PFPS_c, false, x+264, y+40, 50, renderer->a(0xFFFF));
 			}
 		}), 90);
 
