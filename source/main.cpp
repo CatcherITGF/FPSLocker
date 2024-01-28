@@ -415,6 +415,15 @@ public:
 						});
 						list->addItem(clickableListItem3);
 					}
+					auto *clickableListItem4 = new tsl::elm::MiniToggleListItem("Ignore Acquire Texture", *skipAcquire_shared);
+					clickableListItem4->setClickListener([](u64 keys) { 
+						if ((keys & HidNpadButton_A) && PluginRunning) {
+							*skipAcquire_shared = !*skipAcquire_shared;
+							return true;
+						}
+						return false;
+					});
+					list->addItem(clickableListItem4);					
 					break;
 				}
 				case 2:
@@ -756,7 +765,7 @@ public:
 				if ((*API_shared > 0) && (*API_shared <= 2))
 					renderer->drawString(FPSMode_c, false, x, y+40, 20, renderer->a(0xFFFF));
 				renderer->drawString(FPSTarget_c, false, x, y+60, 20, renderer->a(0xFFFF));
-				renderer->drawString(PFPS_c, false, x+290, y+48, 50, renderer->a(0xFFFF));
+				renderer->drawString(PFPS_c, false, x+264, y+44, 50, renderer->a(0xFFFF));
 			}
 		}), 90);
 
@@ -844,9 +853,8 @@ public:
 								*ZeroSync_shared = 0;
 							}
 							fwrite(ZeroSync_shared, 1, 1, file);
-							if (SetBuffers_save) {
-								fwrite(&SetBuffers_save, 1, 1, file);
-							}
+							fwrite(&SetBuffers_save, 1, 1, file);
+							fwrite(skipAcquire_shared, 1, 1, file);
 							fclose(file);
 						}
 					}
@@ -937,6 +945,7 @@ public:
 					SetBuffers_shared = (uint8_t*)(base + rel_offset + 56);
 					ActiveBuffers_shared = (uint8_t*)(base + rel_offset + 57);
 					SetActiveBuffers_shared = (uint8_t*)(base + rel_offset + 58);
+					skipAcquire_shared = (bool*)(base + rel_offset + 59);
 					SetBuffers_save = *SetBuffers_shared;
 					PluginRunning = true;
 					threadCreate(&t0, loopThread, NULL, NULL, 0x1000, 0x20, 0);
